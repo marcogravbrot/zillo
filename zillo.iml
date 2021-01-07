@@ -7,6 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="websockets" level="project" />
+    <orderEntry type="library" exported="" name="gson" level="project" />
+    <orderEntry type="library" exported="" name="loggerFactory" level="project" />
+    <orderEntry type="library" exported="" name="websockets" level="project" />
   </component>
 </module>

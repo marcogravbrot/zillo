@@ -1,9 +1,9 @@
 <component name="libraryTable">
-  <library name="websockets">
+  <library name="websockets" type="repository">
+    <properties maven-id="org.java-websocket:Java-WebSocket:1.5.1" />
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../websockets.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../loggerFactory.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../gson.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/java-websocket/Java-WebSocket/1.5.1/Java-WebSocket-1.5.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
