@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="zillo:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/zillo_jar</output-path>
+    <root id="archive" name="zillo.jar">
+      <element id="module-output" name="zillo" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../websockets.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../loggerFactory.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../gson.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

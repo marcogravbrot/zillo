@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="websockets">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../websockets.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../loggerFactory.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../gson.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
