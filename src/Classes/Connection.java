@@ -1,5 +1,6 @@
 package Classes;
 
+import Classes.Instructions.FileViewer;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -20,25 +21,11 @@ public class Connection extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        String userName = System.getProperty("user.name");
-        String osInformation = System.getProperty("os.name") + " | " +
-                System.getProperty("os.version") + " | " +
-                System.getProperty("os.arch");
-
-        String dir = System.getProperty("user.dir");
-
-        HashMap<String, String> information = new HashMap<String, String>();
-        information.put("type", "connection");
-        information.put("user", userName);
-        information.put("os", osInformation);
-        information.put("dir", dir);
-
-        String toSend = json.toJson(information);
-
-        System.out.println("New connection opened");
-        System.out.println(toSend);
-
-        this.send(toSend);
+        try {
+            Initialize init = new Initialize(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -64,8 +51,19 @@ public class Connection extends WebSocketClient {
         HashMap<String, String> command = json.fromJson(message, HashMap.class);
 
         String type = command.get("type");
+        String from = command.get("from");
 
-        if (type.equals("exec")) {
+        if (type.equals("fileview")) {
+            String path = command.get("value");
+            String todo = command.get("todo");
+
+            FileViewer fview = new FileViewer(this, path);
+            try {
+                fview.execute(todo, from);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (type.equals("exec")) {
             String exec = command.get("value");
 
             System.out.println("Running command " + exec);
@@ -77,13 +75,14 @@ public class Connection extends WebSocketClient {
                 e.printStackTrace();
             }
 
-            HashMap<String, String> information = new HashMap<String, String>();
-            information.put("type", "result");
-            information.put("value", "du er ballamann");
-
-            String toSend = json.toJson(information);
-
-            this.send(toSend);
+//            HashMap<String, String> information = new HashMap<String, String>();
+//            information.put("type", "reply");
+//            information.put("to", from);
+//            information.put("value", "du er ballamann");
+//
+//            String toSend = json.toJson(information);
+//
+//            this.send(toSend);
         }
     }
 
