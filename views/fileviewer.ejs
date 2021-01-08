@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Zillo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+</head>
+<body>
+    <h1><a href="/">zillo</a></h1>
+    <h4>file viewer: <%= client.name %></h4>
+    <% if (locals.path) { %>
+        <h4>location: <%= path %></h4>
+    <% } %>
+
+    <form action="/<%= client.id %>/fileviewer" method="post">
+        <label for="path">path:</label>
+        <input type="text" id="path" name="path">
+        <input type="submit" value="Submit">
+    </form>
+
+    <div class="fileviewer">
+        <% if (locals.files) { %>
+            <form id="backDirectory" action="/<%= client.id %>/fileviewer" method="post">
+                <a href="javascript:;" onclick="document.getElementById('backDirectory').submit();">../</a>
+                <input type="hidden" name="path" id="path" value="<%= goUp(path) %>">
+            </form>
+
+            <% for (const [file, isDir] of Object.entries(files)) { %>
+                <% if (isDir == 1) { %>
+                    <form action="/<%= client.id %>/fileviewer" method="post">
+                        <label for="path"><%= file %></label>
+                        <input type="hidden" name="path" id="path" value="<%= path %>/<%= file %>">
+                        <input type="submit" value=">">
+                    </form>
+                <% } else { %>
+                    <p><%= file %></p>
+                <% } %>
+            <% } %>
+        <% } %>
+    </div>
+</body>
+</html>
