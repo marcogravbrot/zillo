@@ -5,6 +5,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
@@ -43,9 +44,17 @@ public class Connection extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         System.out.println("Closed with exit code " + code + " additional info: " + reason);
-        System.out.println("Trying to establish new connection..");
+        System.out.println("Trying to establish new connection in 5s");
 
-        this.reconnect();
+        Connection connection = null;
+        try {
+            Thread.sleep(10000);
+
+            connection = new Connection( new URI( "wss://zillo.gravbrot.it" ) );
+        } catch (URISyntaxException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        connection.connect();
     }
 
     @Override
