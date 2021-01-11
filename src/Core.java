@@ -1,5 +1,6 @@
 import Classes.Connection;
-import Classes.Instructions.Exec;
+import Classes.InstructionResolver;
+import Classes.Instructions.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -10,7 +11,7 @@ import java.net.URLDecoder;
 import java.nio.file.*;
 
 public class Core {
-    public static void main(String[] args) throws URISyntaxException, UnsupportedEncodingException {
+    public static void main(String[] args) throws URISyntaxException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         System.out.println("zillo initialized");
 
         Connection connection = new Connection(new URI("wss://zillo.gravbrot.it"));
@@ -21,5 +22,7 @@ public class Core {
 //
 //        System.out.println(path);
 //        System.out.println(Thread.currentThread().getStackTrace()[1]);
+
+
     }
 }

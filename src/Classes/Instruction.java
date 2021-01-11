@@ -11,9 +11,8 @@ public class Instruction {
     public Connection connection;
     public Gson json = new Gson();
 
-    public Instruction(Connection connection, String type, String[] values) {
+    public Instruction(Connection connection, String type) {
         this.type = type;
-        this.values = values;
         this.connection = connection;
     }
 

