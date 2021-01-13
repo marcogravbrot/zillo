@@ -11,5 +11,6 @@
     <orderEntry type="library" exported="" name="loggerFactory" level="project" />
     <orderEntry type="library" exported="" name="websockets" level="project" />
     <orderEntry type="library" name="com.1stleg:jnativehook:2.1.0" level="project" />
+    <orderEntry type="library" name="com.github.sarxos:webcam-capture:0.3.12" level="project" />
   </component>
 </module>
