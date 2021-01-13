@@ -36,6 +36,8 @@ public class Connection extends WebSocketClient {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 

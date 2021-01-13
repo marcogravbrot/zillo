@@ -22,12 +22,14 @@ public class FileViewer extends Instruction {
         String path = (String) arguments.get("path");
         String writeData = (String) arguments.get("data");
 
+        HashMap<String, String> toSend = new HashMap<String, String>();
+        toSend.put("path", String.valueOf(Paths.get(path).normalize()));
+
         if (todo.equals("list")) {
             HashMap<String, Integer> list = listFiles(path);
 
             String jsonList = json.toJson(list);
 
-            HashMap<String, String> toSend = new HashMap<String, String>();
             toSend.put("type", "reply");
             toSend.put("value", jsonList);
             toSend.put("to", from);
@@ -38,7 +40,6 @@ public class FileViewer extends Instruction {
         } else if (todo.equals("read")) {
             String data = readFile(path);
 
-            HashMap<String, String> toSend = new HashMap<String, String>();
             toSend.put("type", "reply");
             toSend.put("value", data);
             toSend.put("to", from);
@@ -49,7 +50,6 @@ public class FileViewer extends Instruction {
         } else if (todo.equals("write")) {
             writeFile(path, writeData);
 
-            HashMap<String, String> toSend = new HashMap<String, String>();
             toSend.put("type", "reply");
             toSend.put("value", writeData);
             toSend.put("to", from);
@@ -58,12 +58,14 @@ public class FileViewer extends Instruction {
 
             connection.send(finishedString);
         } else if (todo.equals("new")) {
+            String newPath = path + "/" + writeData;
+
             makeFile(path, writeData);
 
-            HashMap<String, String> toSend = new HashMap<String, String>();
             toSend.put("type", "reply");
             toSend.put("value", "");
             toSend.put("to", from);
+            toSend.put("path", newPath);
 
             String finishedString = json.toJson(toSend);
 
@@ -71,18 +73,48 @@ public class FileViewer extends Instruction {
         } else if (todo.equals("delete")) {
             deleteFile(path);
 
-//            HashMap<String, Integer> list = listFiles(Paths.get(path, "../").normalize());
-//
-//            String jsonList = json.toJson(list);
-//
-//            HashMap<String, String> toSend = new HashMap<String, String>();
-//            toSend.put("type", "reply");
-//            toSend.put("value", "");
-//            toSend.put("to", from);
-//
-//            String finishedString = json.toJson(toSend);
-//
-//            connection.send(finishedString);
+            HashMap<String, Integer> list = listFiles(String.valueOf(Paths.get(path, "../").normalize()));
+
+            String jsonList = json.toJson(list);
+
+            toSend.put("type", "reply");
+            toSend.put("value", jsonList);
+            toSend.put("to", from);
+            toSend.put("path", String.valueOf(Paths.get(path, "../").normalize()));
+
+            String finishedString = json.toJson(toSend);
+
+            connection.send(finishedString);
+        } else if (todo.equals("newFolder")) {
+            makeFolder(path, writeData);
+
+            HashMap<String, Integer> list = listFiles(path);
+
+            String jsonList = json.toJson(list);
+
+            toSend.put("type", "reply");
+            toSend.put("value", jsonList);
+            toSend.put("to", from);
+
+            String finishedString = json.toJson(toSend);
+
+            connection.send(finishedString);
+        } else if (todo.equals("deleteFolder")) {
+            deleteFolder(new File(path));
+
+            String newPath = String.valueOf(Paths.get(path, "../").normalize());
+            HashMap<String, Integer> list = listFiles(newPath);
+
+            String jsonList = json.toJson(list);
+
+            toSend.put("type", "reply");
+            toSend.put("value", jsonList);
+            toSend.put("to", from);
+            toSend.put("path", newPath);
+
+            String finishedString = json.toJson(toSend);
+
+            connection.send(finishedString);
         }
     }
 
@@ -143,6 +175,35 @@ public class FileViewer extends Instruction {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+    private void makeFolder(String path, String name) {
+        File myObj = new File(path + "/" + name);
+        if (!myObj.exists()) {
+            myObj.mkdirs();
+            System.out.println("Folder created: " + myObj.getName());
+        } else {
+            System.out.println("Folder already exists.");
+        }
+    }
+
+    private void deleteFolder(File directory) {
+        if(directory.exists()){
+            File[] files = directory.listFiles();
+
+            if(null!=files){
+                for(int i=0; i<files.length; i++) {
+                    if(files[i].isDirectory()) {
+                        deleteFolder(files[i]);
+                    }
+                    else {
+                        files[i].delete();
+                    }
+                }
+            }
+        }
+
+        directory.delete();
     }
 
     private void getFileInfo(String path) {

@@ -3,33 +3,44 @@ package Classes;
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Stream;
+
+import Classes.Instructions.*;
+
+
 
 public class InstructionResolver {
     Gson json = new Gson();
     private String InstructionsPath = "src/Classes/Instructions";
     List<Class> instructions = new ArrayList<>();
 
-    public InstructionResolver() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-        File file = new File(InstructionsPath);
-        File[] files = file.listFiles();
+    public InstructionResolver() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
+        URI uri = InstructionResolver.class.getResource("Instructions/").toURI();
+        Path myPath;
+        if (uri.getScheme().equals("jar")) {
+            FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+            myPath = fileSystem.getPath("/Classes/Instructions");
+        } else {
+            myPath = Paths.get(uri);
+        }
+        Stream<Path> walk = Files.walk(myPath, 1);
+        for (Iterator<Path> it = walk.iterator(); it.hasNext();){
+            String filename = it.next().getFileName().toString();
 
-        if (files != null) {
-            for (File f : files) {
-                String fname = f.getName();
+            if (filename.toString().endsWith(".class")) {
+                filename = filename.substring(0, filename.lastIndexOf('.'));
 
-                if (fname.endsWith(".java")) {
-                    Class instruction = Class.forName("Classes.Instructions." + fname.substring(0, fname.length() - 5));
-                    instructions.add(instruction);
+                Class instruction = Class.forName("Classes.Instructions." + filename);
+                instructions.add(instruction);
 
-                    String type = (String) instruction.getField("type").get("type");
-
-                    //System.out.println(type);
-                }
+                String type = (String) instruction.getField("type").get("type");
             }
         }
     }
@@ -43,8 +54,6 @@ public class InstructionResolver {
             String instructionType = (String) instructionClass.getField("type").get("type");
 
             if (type.equals(instructionType)) {
-                System.out.println("Found a noice thing");
-
                 HashMap<String, Object> arguments = new HashMap<String, Object>();
 
                 for (String key : command.keySet()) {
