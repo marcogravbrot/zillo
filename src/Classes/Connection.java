@@ -1,7 +1,5 @@
 package Classes;
 
-import Classes.Instructions.*;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 

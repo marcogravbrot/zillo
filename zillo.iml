@@ -12,5 +12,6 @@
     <orderEntry type="library" exported="" name="websockets" level="project" />
     <orderEntry type="library" name="com.1stleg:jnativehook:2.1.0" level="project" />
     <orderEntry type="library" name="com.github.sarxos:webcam-capture:0.3.12" level="project" />
+    <orderEntry type="library" name="net.java.dev.jna:jna:5.5.0" level="project" />
   </component>
 </module>

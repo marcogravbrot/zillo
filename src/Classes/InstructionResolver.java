@@ -14,8 +14,6 @@ import java.util.stream.Stream;
 
 import Classes.Instructions.*;
 
-
-
 public class InstructionResolver {
     Gson json = new Gson();
     private String InstructionsPath = "src/Classes/Instructions";

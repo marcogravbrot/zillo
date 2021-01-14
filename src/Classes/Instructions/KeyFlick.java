@@ -5,7 +5,6 @@ import Classes.Instructions.Helpers.KeyFlicker;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
